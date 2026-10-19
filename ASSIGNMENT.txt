@@ -1,0 +1,153 @@
+Arithmetic Parser in C
+Time	1 week
+You write	the whole program in one file, calc.c
+You submit	a link to your last commit in your GitHub repository (see 9. Submit)
+AI tools	allowed, if you cite them (see 7. Resources and AI)
+Sample tests	calc-tests.zip (attached below): example inputs with expected outputs and two test scripts
+Write a C program calc that reads arithmetic expressions from text files, evaluates them, and writes each result, or the exact position of the first error, to an output file.
+
+1. Set up your repository
+On GitHub, create a new repository.
+Work in a Codespace (Code → Codespaces → Create codespace on main).
+Your program goes in calc.c in the top folder of the repository. Only calc.c is graded. You may keep other files there too, for example the test files or a Makefile.
+2. Building
+Your program is built and graded with exactly this command:
+
+gcc -O2 -Wall -Wextra -std=c17 -o calc calc.c -lm
+For grade 10 it must also build without warnings and run without errors when built with:
+
+gcc -O1 -g -Wall -Wextra -std=c17 -fsanitize=address,undefined -o calc calc.c -lm
+3. File header
+The first lines of calc.c must be:
+
+// Name Lastname StudentID
+// (optional) https://github.com/<your-username>/calc-lab-home
+// Compile with: gcc -O2 -Wall -Wextra -std=c17 -o calc calc.c -lm
+// Resources used: <every AI tool, website and book you used; details in comments where you used them>
+4. The program
+calc [-d DIR | --dir DIR] [-o OUTDIR | --output-dir OUTDIR] [input.txt]
+calc -o OUTDIR input.txt evaluates one file.
+calc -d DIR -o OUTDIR evaluates every *.txt file directly inside DIR. Other files and subfolders are ignored.
+If OUTDIR does not exist, create it (its parent folder exists). If it already exists, write into it.
+Without -o, use the default output folder <input_base>_<name>_<studentid> in the current folder. <input_base> is the input file name without .txt or, with -d, the folder's name.
+For an input task1.txt the output file is <OUTDIR>/task1_<name>_<lastname>_<studentid>.txt.
+Examples, for the student Anna Berzina with ID 221234:
+
+Command	Writes
+calc -o results labs/task1.txt	results/task1_anna_berzina_221234.txt
+calc labs/task1.txt	task1_anna_221234/task1_anna_berzina_221234.txt
+calc -d labs -o results	results/task1_anna_berzina_221234.txt, results/task2_anna_berzina_221234.txt, …
+calc -d labs	labs_anna_221234/task1_anna_berzina_221234.txt, …
+Exit code and messages
+
+A file that evaluates to ERROR:<pos> is a normal result: exit code 0.
+On a missing input file or folder, no arguments, an unknown option, or an output that cannot be written: print a message to stderr and exit with a non-zero code.
+5. Rules
+These rules decide every expected output, and the grading tests check them exactly.
+
+Lines and output
+Every non-blank line is one expression. The output file contains one result per expression, in order, one per line. Blank lines produce no output.
+A line whose first non-blank character is # is a comment and is ignored. A # anywhere else is an invalid character.
+If any error occurs anywhere in the file, the output file contains only ERROR:<pos> for the first error, with no partial results.
+Positions
+Positions are 1-based and count every character in the file, including each \n and the characters in comment lines.
+The error position is the start of the token the parser was looking at when it could not continue:
+Error	Reported at	Input	Output
+invalid character	that character	2 + & 5	ERROR:5
+two operators in a row	the second operator	7 + * 3	ERROR:5
+missing operand at end of line	the line's \n (file length + 1 if the last line has no \n)	3 * followed by \n	ERROR:5
+missing ) at end of line	same as above	(2 + 3 followed by \n	ERROR:7
+extra )	that )	(1 + 2))	ERROR:8
+division by zero	start of the right operand	10 / 0	ERROR:6
+negative integer exponent	start of the exponent	2 ** (1 - 2)	ERROR:6
+float result is infinite or not a number	the operator	10.0 ** 400	ERROR:6
+Numbers and operators
+Operators, from highest to lowest precedence:
+**, right-associative: 2 ** 3 ** 2 == 2 ** 9 == 512
+* and /, left-associative
++ and -, left-associative
+Parentheses ( ) group as usual.
+There are no unary operators: -5 and 2 * -3 are errors (at the -).
+Integers: digits only, 64-bit (long long). The tests never overflow.
+int / int truncates toward zero like C: 7 / 2 is 3, (0 - 7) / 2 is -3.
+int ** int with a non-negative exponent is an integer. x ** 0 is 1, including 0 ** 0.
+Floats (grade 10): digits, ., digits, for example 12.5 or 0.25. .5, 5. and 1.5e3 are not valid; the error is at the . or the e.
+If either operand is a float, the operation is done in double: 7 / 2.0 is 3.5, 0.5 ** (0 - 1) is 2.
+Float division by zero (1.5 / 0.0) is a division-by-zero error.
+Printing: integers with %lld, floats with %.15g. So 1.25 * 4 prints 5, and 0.1 + 0.2 prints 0.3.
+Spaces and tabs may appear anywhere between tokens.
+There is no limit on file size or line length: the tests include files of several megabytes. Parentheses nest up to 1000 deep.
+Constraints
+One file, calc.c, using only the standard C library (stdio, stdlib, string, ctype, math, errno, dirent, sys/stat).
+Write your own tokenizer and parser. Do not use flex/bison or call Python, bc or any other program.
+6. Grading
+Your program is run on a set of test files that follow the rules above. Each grade needs every test of that grade and of all grades below it to pass.
+
+Grade	You need…	Example input → output file
+4	calc -o OUTDIR input.txt with the correct output file name; integers with + and -; one result per line	2 + 5 - 3 → 4
+2 + 2 ⏎ 10 - 3 + 1 → 4 ⏎ 8
+5	correct ERROR:<pos> for invalid characters, operators in a row and missing operands	10 + - 3 → ERROR:6
+1 + 2 ⏎ 3 + (no final \n) → ERROR:10
+6	* and / with precedence; division by zero	3 + 2 * 5 - 4 → 9
+5 + 4 / 0 * 2 → ERROR:9
+7	parentheses, including missing and extra )	((2 + 3) * (4 + (6 - 1))) - 10 → 35
+2 * () → ERROR:6
+8	** (right-associative, negative-exponent error); # comment lines and blank lines	2 * 3 ** 2 + 1 → 19
+# note ⏎ (2 + 3) * 4 # not here → ERROR:20
+9	the full command line from section 4: -d/--dir, --output-dir, default output folder, exit codes and error messages	checked by cli.sh in the sample tests
+10	floats, plus: very large files handled efficiently, no warnings, no sanitizer errors, and good comments	3.5 + 2.5 * 2 - 1.0 → 7.5
+(0 - 8) ** 0.5 → ERROR:9
+(⏎ marks a new line in the file.)
+
+Sample tests
+Download calc-tests.zip, unpack it next to your calc.c and run:
+
+gcc -O2 -Wall -Wextra -std=c17 -o calc calc.c -lm
+sh calc-tests/run_tests.sh ./calc     # file tests: tests/NAME.txt vs tests/NAME_output.txt
+sh calc-tests/cli.sh ./calc           # command-line tests (grade 9)
+Test files are named after their grade: g6_zero.txt is a grade 6 test, and g6_zero_output.txt is its expected output.
+Grading uses more tests than these, including files of several megabytes. All of them follow the rules in section 5. Passing the samples is a good sign, but follow the rules, not just the samples.
+Can lower your grade
+Up to −1: crashes, memory errors, undefined behaviour or memory leaks on normal input.
+Up to −2: missing, unclear or misleading comments, or resources and AI tools used without a citation.
+You may be asked to explain any part of your code. If you cannot explain it, the grade can be lowered.
+Code that does not compile with the command in section 2 cannot be graded.
+
+7. Resources and AI
+You may use books, documentation, websites and AI tools. Every one must be cited:
+
+On line 4 of calc.c, list every resource and AI tool you used. For AI tools, a conversation history must be provided.
+At each place in the code where you used one, write a comment saying what you used and, for AI, the prompt:
+// Tokenizer structure based on K&R, chapter 5.
+// AI (ChatGPT): prompt "how do I read a whole file into memory in C without knowing its size" Link: ...
+//   I used the realloc doubling idea; the loop below is my own.
+Relying fully on AI goes against the point of this lab. You are graded on code you understand and can explain.
+
+8. Comments
+Comments must explain why, not what. At least explain:
+
+how your tokenizer tracks positions
+why your grammar gives the right precedence, and why ** is right-associative
+why each error is reported at the position you chose
+how you decide between integer and float arithmetic
+how you handle large files without slowing down (no repeated copying)
+// Good: power() calls itself for the exponent, so 2**3**2 groups as 2**(3**2).
+// Bad:  // call power
+Hint: a recursive descent parser with one function per precedence level fits these rules well:
+
+expr    := term  { ('+' | '-') term }
+term    := power { ('*' | '/') power }
+power   := primary [ '**' power ]
+primary := NUMBER | '(' expr ')'
+9. Submit
+Commit and push regularly. Your commit history is part of the evidence that the work is your own.
+
+Before the deadline:
+
+Push your last commit.
+On github.com, open your repository, click the latest commit above the file list, and copy the page address:
+https://github.com/<your-username>/calc-lab-home/commit/<long-hash>;
+Submit that commit link.
+Only the commit you submit is graded.
+
+calc-tests.zip calc-tests.zip

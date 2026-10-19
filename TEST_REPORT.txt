@@ -1,0 +1,31 @@
+VERIFICATION — 2026-10-19
+Student: Emre Elaziz 251ADB139
+
+Environment: Windows; w64devkit GCC 16.1.0; w64devkit sh.
+
+Command:
+gcc -O2 -Wall -Wextra -std=c17 -o calc calc.c -lm
+Result: success, no warnings.
+
+Command:
+sh calc-tests/run_tests.sh ./calc
+Result: 44 passed, 0 failed.
+
+Command:
+sh calc-tests/cli.sh ./calc
+Result: all 12 checks PASS; cli: all passed.
+The original script's cleanup trap cannot remove its current directory on
+Windows and emits a cleanup warning after the passing summary.
+
+Command:
+python3 extra_tests.py ./calc
+Result: 38 expression/stress cases and 8 additional CLI checks passed.
+Stress: 1000 parentheses, 100000 powers, 3 MB single-line expression,
+1000000 expression lines, 5 MB comment, late-file error and no partial output.
+
+Attempted command:
+gcc -O1 -g -Wall -Wextra -std=c17 -fsanitize=address,undefined -o calc calc.c -lm
+Result: unavailable here: linker cannot find -lasan or -lubsan.
+Sanitizer runtime success is NOT verified. Ubuntu CI supplied but not run.
+
+GitHub: stored authentication token invalid. No push/commit URL or Codespace.
