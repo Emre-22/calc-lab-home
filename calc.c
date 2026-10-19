@@ -1,7 +1,8 @@
 // Emre Elaziz 251ADB139
 // Repository: https://github.com/Emre-22/calc-lab-home
 // Compile with: gcc -O2 -Wall -Wextra -std=c17 -o calc calc.c -lm
-// Resources used: OpenAI Codex (ChatGPT), assignment and supplied calc-tests; see AI_HISTORY.md.
+// Resources used: OpenAI Codex (ChatGPT), https://chatgpt.com/s/cx_6ad64d5443808191accfb52cd72f4f11, 
+// Full assignment; see AI_HISTORY.md.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

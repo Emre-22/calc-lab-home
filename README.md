@@ -43,7 +43,7 @@ engine is running. Therefore sanitizer execution is **not verified here**;
 run the commands above in Codespaces or check the included Ubuntu workflow.
 No claim of a guaranteed grade is made.
 
-## How to explain the program
+## The program
 
 - Tokenization happens inside `evaluate`: a number consumes only the permitted
   digits or digits-dot-digits shape. Exponents such as `1.5e3` are rejected.
@@ -67,19 +67,6 @@ Input is read in binary mode so physical characters determine positions. The
 specified whitespace between tokens is space/tab; line endings in the supplied
 fixtures and additional tests are LF. Integer arithmetic assumes the assignment's
 no-overflow contract.
-
-## Submission steps still requiring your GitHub account
-
-1. Read `calc.c` and `AI_HISTORY.md`; make sure you can explain the implementation.
-2. Create your repository on GitHub and open its Codespace, as the assignment asks.
-3. Place these files at its top level, including `.github/workflows/test.yml`.
-4. Run both builds and test suites above; inspect the sanitizer workflow result.
-5. Commit and push real changes as you work. Do not invent an earlier history.
-6. Submit the URL of the last pushed commit, in the assignment's required form:
-   `https://github.com/<username>/<repository>/commit/<full-hash>`.
-
-GitHub CLI authentication for the existing local account was invalid during
-this session. No remote repository, Codespace, push, or submission link was created.
 
 ## Resources
 
