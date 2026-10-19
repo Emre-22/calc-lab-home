@@ -1,5 +1,5 @@
 // Emre Elaziz 251ADB139
-// Repository: add the submission repository URL when publishing.
+// Repository: https://github.com/Emre-22/calc-lab-home
 // Compile with: gcc -O2 -Wall -Wextra -std=c17 -o calc calc.c -lm
 // Resources used: OpenAI Codex (ChatGPT), assignment and supplied calc-tests; see AI_HISTORY.md.
 #include <stdio.h>
