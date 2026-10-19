@@ -1,2 +1,2 @@
 # calc-lab-home
-grade lab
+graded lab
